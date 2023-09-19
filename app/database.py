@@ -8,13 +8,12 @@ class DatabaseConnection:
     def get_connection(cls):
         if cls._connection is None:
             cls._connection = mysql.connector.connect(
-                user = cls._config['DATABASE_USER_NAME'],
+                user = cls._config['DATABASE_USERNAME'],
                 password = cls._config['DATABASE_PASSWORD'],
                 port = cls._config['DATABASE_PORT'],
                 host = cls._config['DATABASE_HOST'],
-                database = cls._config['DATABASE_NAME']
             )
-        
+            
         return cls._connection
     
     @classmethod
@@ -23,6 +22,8 @@ class DatabaseConnection:
     
     @classmethod
     def _execute_query(cls,query,params=None):
+        """Metodo privado de clase que crear el cursor y ejecuta el query, 
+        retornando el cursor con la consulta realizada"""
         cursor=cls.get_connection().cursor()
         cursor.execute(query,params)
         return cursor
