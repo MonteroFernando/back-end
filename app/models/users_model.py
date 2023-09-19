@@ -30,3 +30,19 @@ class User:
         params=(user.username,user.password,user.email,user.img,user.firstname,user.lastname)
         DatabaseConnection.execute_query(query,params)
     
+    @classmethod
+    def get(self):
+        """Devuelve todos los usuarios"""
+        query="""SELECT * FROM teamhub.users"""
+        responce=DatabaseConnection.fetchall(query)
+        lista=[]
+        for user in responce:
+            usuario=User(id=user[0],
+                         username=user[1],
+                         password=user[2],
+                         email=user[3],
+                         img=user[4],
+                         firstname=user[5],
+                         lastname=user[6])
+            lista.append(usuario.serialize())
+        return {'users':lista}

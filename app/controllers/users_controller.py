@@ -10,4 +10,8 @@ class UserController:
         user=User(**data)
         User.create(user)
         return{'mensaje': 'Usuario creado con éxito'},200
+    @classmethod
+    def get(cls):
+        users=User.get()
+        return users,200
     
