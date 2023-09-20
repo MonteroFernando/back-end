@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from config import Config
 
-from .routes.bp import user_bp
+from .routes.user_route import user_bp
 
 from .database import DatabaseConnection
 
