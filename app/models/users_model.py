@@ -34,9 +34,9 @@ class User:
     def get(self):
         """Devuelve todos los usuarios"""
         query="""SELECT * FROM teamhub.users"""
-        responce=DatabaseConnection.fetchall(query)
+        response=DatabaseConnection.fetchall(query)
         lista=[]
-        for user in responce:
+        for user in response:
             usuario=User(id=user[0],
                          username=user[1],
                          password=user[2],
@@ -46,3 +46,43 @@ class User:
                          lastname=user[6])
             lista.append(usuario.serialize())
         return {'users':lista}
+
+    @classmethod
+    def get_one(self,data):
+        """Devuelve el usuario con el dato ingresado como parametro, solo de los datos unicos.
+        Args:
+            data (dict): Diccionario con una sola key. Admitidos: id,username,email"""
+        key=''.join("{}=%s".format(key) for key in data.keys())
+        query=f'SELECT id,username,password,email,img,firstname,lastname FROM teamhub.users WHERE {key}'
+        params=tuple(data.values())
+        response=DatabaseConnection.fetchone(query,params)
+        user_ob=User(
+            id=response[0],
+            username=response[1],
+            password=response[2],
+            email=response[3],
+            img=response[4],
+            firstname=response[5],
+            lastname=response[6]
+        )
+        user=User.serialize(user_ob)
+        return user
+    
+    @classmethod
+    def update(self,data):
+        """Metodo que modifica un usuario.
+        parametro obligatorio del diccionario es id, luego los valores que se van a modificar.
+        Args:
+        data(dict): diccionario"""
+        key=', '.join("{}=%s".format(key) for key in data.keys() if key!='id')
+        query=f'UPDATE teamhub.users SET {key} WHERE users.id=%s'
+        params= tuple(value for key,value in data.items() if key != "id")+(data["id"],)
+        DatabaseConnection.execute_query(query,params)
+        
+
+
+
+
+
+
+        
