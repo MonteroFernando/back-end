@@ -23,5 +23,17 @@ class Category:
         params=tuple(data.values())
         response=DatabaseConnection.execute_query(query,params)
         return cls(**dict(zip(cls._keys,response)))
+    
+    @classmethod
+    def get_all(cls):
+        query="SELECT * FROM teamhub.categories"
+        response=DatabaseConnection.execute_query(query)
+        return [cls(**dict(zip(cls._keys,row))) for row in response]
+    
+    @classmethod
+    def update(cls,data):
+        key=' ,'.join("{}=%s".format (key) for key in data.keys() if key!='id')
+        query=f"UPDATE teamhub.categories SET {key} WHERE id=%s"
+        #params=
 
 

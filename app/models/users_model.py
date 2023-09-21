@@ -54,7 +54,7 @@ class User:
         DatabaseConnection.execute_query(query,params)
 
     @classmethod
-    def update(cls,data):
+    def delete(cls,data):
         """Elimina el id recibido en el diccionario del parametro.
         Args:
         data(dict): diccionario, de 1 solo elemento con el id del usuario"""

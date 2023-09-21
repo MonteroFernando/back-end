@@ -34,6 +34,9 @@ class UserController:
             return {'error':'No se ingreso el Id a modificar'},400
         User.update(data)
         return {'mensaje':'Usuario modificado con éxito'},200
+    @classmethod
+    def delete(cls,data):
+        pass
 
         
         
