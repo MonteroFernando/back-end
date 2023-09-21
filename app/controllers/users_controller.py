@@ -1,5 +1,4 @@
 from ..models.users_model import User
-
 from flask import request
 
 class UserController:
@@ -12,7 +11,8 @@ class UserController:
             return {'error':'No se ingresaron todos los campos obligatorios'},400
         user=User(**data)
         User.create(user)
-        return{'mensaje': 'Usuario creado con éxito'},200
+        id=User.get_last_id()
+        return{'mensaje': 'Usuario creado con éxito','id_asignado':id['last_id']},200
     @classmethod
     def get_all(cls):
         users=User.get_all()
@@ -35,8 +35,13 @@ class UserController:
         User.update(data)
         return {'mensaje':'Usuario modificado con éxito'},200
     @classmethod
-    def delete(cls,data):
-        pass
+    def delete(cls):
+        data=request.json
+        if not 'id' in list(data):
+            return{'error':'No se ingreso el id a eliminar'},400
+        User.delete(data)
+        return {'mensaje':'Usuario eliminado con éxito'},200
+    
 
         
         
