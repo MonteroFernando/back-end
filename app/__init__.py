@@ -4,6 +4,7 @@ from config import Config
 
 from .routes.user_route import user_bp
 from .routes.categories_route import category_bp
+from .routes.servers_route import server_bp
 
 from .database import DatabaseConnection
 
@@ -19,4 +20,5 @@ def init_app():
 
     app.register_blueprint(user_bp,url_prefix='/users')
     app.register_blueprint(category_bp, url_prefix='/categories')
+    app.register_blueprint(server_bp,url_prefix='/servers')
     return app

@@ -28,10 +28,13 @@ class Server:
     @classmethod
     def get(cls,data):
         keys=''.join("{}=%s".format(key) for key in data.keys())
-        query=f"SELECT * FROM teamhub.servers WHERE {keys}=%s"
-        params=tuple(data,)
+        query=f"SELECT * FROM teamhub.servers WHERE {keys}"
+        params=tuple(data.values())
         response=DatabaseConnection.fetchone(query,params)
-        return cls(**dict(zip(cls._keys,response)))
+        if response is None:
+            return None
+        else:
+            return cls(**dict(zip(cls._keys,response)))
     @classmethod
     def update(cls,data):
         keys=' ,'.join("{}=%s".format (key) for key in data.keys() if key != 'id')
