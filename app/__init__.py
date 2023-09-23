@@ -5,7 +5,8 @@ from config import Config
 from .routes.user_route import user_bp
 from .routes.categories_route import category_bp
 from .routes.servers_route import server_bp
-from .routes.members_route import members_bp
+from .routes.members_route import member_bp
+from .routes.channels_route import channel_bp
 
 from .database import DatabaseConnection
 
@@ -22,5 +23,7 @@ def init_app():
     app.register_blueprint(user_bp,url_prefix='/users')
     app.register_blueprint(category_bp, url_prefix='/categories')
     app.register_blueprint(server_bp,url_prefix='/servers')
-    app.register_blueprint(members_bp,url_prefix='/members')
+    app.register_blueprint(member_bp,url_prefix='/members')
+    app.register_blueprint(channel_bp, url_prefix='/channels')
+
     return app

@@ -28,7 +28,7 @@ class Member:
         return [cls(**dict(zip(cls._keys,row)))for row in response]
     @classmethod
     def get(cls,data):
-        query="SELECT * FROM teamhub.members WHERE is=%s"
+        query="SELECT * FROM teamhub.members WHERE id=%s"
         params=(data['id'],)
         response=DatabaseConnection.fetchone(query,params)
         return cls(**dict(zip(cls._keys,response)))
@@ -39,7 +39,7 @@ class Member:
         params=tuple(value for k,value in data.items() if k != 'id')+(data['id'],)
         DatabaseConnection.execute_query(query,params)
     @classmethod
-    def update(cls,data):
+    def delete(cls,data):
         query="DELETE FROM teamhub.members WHERE id=%s"
-        params=(data['id'])
-        DatabaseConnection.execute_query(query,data)
+        params=(data['id'],)
+        DatabaseConnection.execute_query(query,params)
