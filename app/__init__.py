@@ -7,6 +7,7 @@ from .routes.categories_route import category_bp
 from .routes.servers_route import server_bp
 from .routes.members_route import member_bp
 from .routes.channels_route import channel_bp
+from .routes.messages_route import message_bp
 
 from .database import DatabaseConnection
 
@@ -25,5 +26,7 @@ def init_app():
     app.register_blueprint(server_bp,url_prefix='/servers')
     app.register_blueprint(member_bp,url_prefix='/members')
     app.register_blueprint(channel_bp, url_prefix='/channels')
+    app.register_blueprint(message_bp, url_prefix='/messages')
+    
 
     return app
