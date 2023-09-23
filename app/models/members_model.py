@@ -6,6 +6,10 @@ class Member:
         self.id=kwargs.get('id')
         self.user_id=kwargs.get('user_id')
         self.server_id=kwargs.get('server_id')
+
+    def serialize(self):
+        return self.__dict__
+    
     @classmethod
     def create(cls,member):
         query="INSERT INTO teamhub.members (user_id,server_id) VALUES (%s,%s)"
