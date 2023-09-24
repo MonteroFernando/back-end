@@ -1,4 +1,6 @@
 from ..database import DatabaseConnection
+from .members_model import Member
+from .servers_model import Server
 
 class User:
     _keys=('id','username','password','email','img','firstname','lastname')
@@ -13,7 +15,23 @@ class User:
         self.lastname = kwargs.get('lastname')
 
     def serialize(self):
-        return self.__dict__
+        lista_servidor=[]
+        members=Member.get(Member(user_id=self.id))
+        for m in members:
+            servers=Server.get(Server(id=m.server_id))
+            for s in servers:
+                lista_servidor.append(s.serialize())
+        return {
+            'id':self.id,
+            'username':self.username,
+            'password':self.password,
+            'email':self.email,
+            'img':self.img,
+            'firstname':self.firstname,
+            'lastname':self.lastname,
+            'servers':lista_servidor
+
+        }
     
     @classmethod
     def create(cls,user):
@@ -25,25 +43,23 @@ class User:
         DatabaseConnection.execute_query(query,params)
         
     @classmethod
-    def get_all(cls):
-        """Devuelve todos los usuarios"""
-        query="""SELECT * FROM teamhub.users"""
-        response=DatabaseConnection.fetchall(query)
-        return [cls(**dict(zip(cls._keys, row))) for row in response]
-
-    @classmethod
-    def get(cls,data):
-        """Devuelve el usuario con el dato ingresado como parametro, solo de los datos unicos.
+    def get(cls,user):
+        """Devuelve el usuario con el dato ingresado como parametro.
         Args:
-            data (dict): Diccionario con una sola key. Admitidos: id,username,email"""
-        keys=''.join("{}=%s".format(key) for key in data.keys())
-        #Esta linea esta para modificar a... keys = "{}=%s".format(list(data.keys())[0])
-        #La dejo asi por ahora, en el caso de users no se usaria mas de una condición asi que estaria bien modificarla
-        #para las otras tablas podriamos usar esto agregado AND u OR antes del .join, segun la necesidad.
-        query=f'SELECT id,username,password,email,img,firstname,lastname FROM teamhub.users WHERE {keys}'
-        params=tuple(data.values())
-        response=DatabaseConnection.fetchone(query,params)
-        return cls(**dict(zip(cls._keys, response)))
+            user (User): Objeto User"""
+        if not user:
+            query="""SELECT * FROM teamhub.users"""
+            response=DatabaseConnection.fetchall(query)
+        else:
+            data=vars(user)
+            keys=''.join("{}=%s".format(key) for key,val in data.items() if val)
+            #Esta linea esta para modificar a... keys = "{}=%s".format(list(data.keys())[0])
+            #La dejo asi por ahora, en el caso de users no se usaria mas de una condición asi que estaria bien modificarla
+            #para las otras tablas podriamos usar esto agregado AND u OR antes del .join, segun la necesidad.
+            query=f'SELECT * FROM teamhub.users WHERE {keys}'
+            params=tuple(val for val in data.values() if val)
+            response=DatabaseConnection.fetchall(query,params)
+        return [cls(**dict(zip(cls._keys, row))) for row in response]
         
     @classmethod
     def update(cls,data):
@@ -57,20 +73,14 @@ class User:
         DatabaseConnection.execute_query(query,params)
 
     @classmethod
-    def delete(cls,data):
-        """Elimina el id recibido en el diccionario del parametro.
+    def delete(cls,id):
+        """Elimina el id recibido como parametro.
         Args:
-        data(dict): diccionario, de 1 solo elemento con el id del usuario"""
+        id(int): el id del user a eliminar"""
         query = 'DELETE FROM teamhub.users WHERE users.id=%s'
-        params = (data['id'],)
+        params = (id,)
         DatabaseConnection.execute_query(query,params)
 
-    @classmethod
-    def get_last_id(cls):
-        """Devuelve el utimo id creado"""
-        query='SELECT max(id) FROM teamhub.users'
-        response=DatabaseConnection.fetchone(query)
-        return {'last_id':response[0]}
 
 
         

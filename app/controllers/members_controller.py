@@ -12,16 +12,13 @@ class MemeberController:
         Member.create(member)
         return {'mensaje':'Members creado con éxito'},200
 
-    @classmethod 
-    def get_all(cls):
-        members=Member.get_all()
-        return [member.serialize() for member in members],200
-    
     @classmethod
     def get(cls):
-        data=request.json
-        member=Member.get(data)
-        return member.serialize(),200
+        user_id=request.args.get('user_id', None)
+        server_id=request.args.get('server_id',None)
+        member_obj=Member(user_id=user_id,server_id=server_id)
+        members=Member.get(member_obj)
+        return [member.serialize() for member in members],200
     
     @classmethod
     def update(cls):
@@ -34,12 +31,8 @@ class MemeberController:
         return {'mensaje':'Member modificado con éxito'},200
     
     @classmethod
-    def delete(cls):
-        data=request.json
-        if not 'id' in data:
-            return {'error':'No se ingreso el id a eliminar'}
-        data=request.json
-        Member.delete(data)
+    def delete(cls,id):
+        Member.delete(id)
         return {'mensaje':'Member elimimado con éxito'}
     
         

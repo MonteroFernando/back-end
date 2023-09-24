@@ -16,22 +16,18 @@ class Member:
         params=(member.user_id,member.server_id)
         DatabaseConnection.execute_query(query,params)
     @classmethod
-    def get_all(cls,data=None):
-        if data==None:
-            query="SELECT * FROM teamhub.members"
-            response=DatabaseConnection.fetchall(query)
+    def get(cls,member):
+        if not member:
+            data=None
+            query=f"SELECT * FROM teamhub.members"
+            params=None
         else:
-            keys='{}=%s'.format(list(data.keys())[0])
-            query=f"SELECT * FROM teamhub.members WHERE {keys}=%s"
-            params=tuple(data.values())
-            response=DatabaseConnection.fetchall(query,params)
+            data=vars(member)
+            keys=list('{}=%s'.format (key) for key,val in data.items() if val)
+            query=f"SELECT * FROM teamhub.members WHERE {keys[0]}"
+            params=tuple(val for val in data.values() if val)
+        response=DatabaseConnection.fetchall(query,params)
         return [cls(**dict(zip(cls._keys,row)))for row in response]
-    @classmethod
-    def get(cls,data):
-        query="SELECT * FROM teamhub.members WHERE id=%s"
-        params=(data['id'],)
-        response=DatabaseConnection.fetchone(query,params)
-        return cls(**dict(zip(cls._keys,response)))
     @classmethod
     def update(cls,data):
         keys=' ,'.join('{}=%s'.format(key) for key in data.keys() if key !='id')
@@ -39,7 +35,7 @@ class Member:
         params=tuple(value for k,value in data.items() if k != 'id')+(data['id'],)
         DatabaseConnection.execute_query(query,params)
     @classmethod
-    def delete(cls,data):
+    def delete(cls,id):
         query="DELETE FROM teamhub.members WHERE id=%s"
-        params=(data['id'],)
+        params=(id,)
         DatabaseConnection.execute_query(query,params)

@@ -8,7 +8,6 @@ class Server:
         self.name=kwargs.get('name')
         self.description=kwargs.get('description')
         self.img=kwargs.get('img')
-        self.user_id=kwargs.get('user_id')
         self.category_id=kwargs.get('category_id')
     
     def serialize(self):
@@ -16,25 +15,21 @@ class Server:
     
     @classmethod
     def create(cls,server):
-        query="INSERT INTO teamhub.servers (name,description,img,user_id,category_id) VALUES(%s,%s,%s,%s,%s)"
-        params=(server.name,server.description,server.img,server.user_id,server.category_id)
+        query="INSERT INTO teamhub.servers (name,description,img,category_id) VALUES(%s,%s,%s,%s)"
+        params=(server.name,server.description,server.img,server.category_id)
         DatabaseConnection.execute_query(query,params)
     
     @classmethod
-    def get_all(cls):
-        query="SELECT * FROM teamhub.servers"
-        servers=DatabaseConnection.fetchall(query)
-        return [cls(**dict(zip(cls._keys,row))) for row in servers]
-    @classmethod
-    def get(cls,data):
-        keys=''.join("{}=%s".format(key) for key in data.keys())
-        query=f"SELECT * FROM teamhub.servers WHERE {keys}"
-        params=tuple(data.values())
-        response=DatabaseConnection.fetchone(query,params)
-        if response is None:
-            return None
+    def get(cls,server=None):
+        if not server:
+            query="SELECT * FROM teamhub.servers"
         else:
-            return cls(**dict(zip(cls._keys,response)))
+            data=vars(server)
+        keys=list("{}=%s".format(key) for key,val in data.items() if val)
+        query=f"SELECT * FROM teamhub.servers WHERE {keys[0]}"
+        params=tuple(val for val in data.values() if val)
+        servers=DatabaseConnection.fetchall(query,params)
+        return [cls(**dict(zip(cls._keys,row))) for row in servers]
     @classmethod
     def update(cls,data):
         keys=' ,'.join("{}=%s".format (key) for key in data.keys() if key != 'id')
@@ -42,9 +37,9 @@ class Server:
         params=tuple(param for k,param in data.items() if k != 'id')+(data['id'],)
         DatabaseConnection.execute_query(query,params)
     @classmethod
-    def delete(cls,data):
+    def delete(cls,id):
         query="DELETE FROM teamhub.servers WHERE id=%s"
-        params=(data['id'],)
+        params=(id,)
         DatabaseConnection.execute_query(query,params)
         
 

@@ -11,22 +11,19 @@ class ServerController:
         Server.create(server)
         return {'mensaje':'Servidor creado con éxito'},200
     @classmethod
-    def get_all(cls):
-        servers=Server.get_all()
-        return [server.serialize() for server in servers],200
-    @classmethod
     def get(cls):
-        data=request.json
-        permitted=('id')#se podria poner name como unique para agregar aqui
-        if len(data)> 1:
-            return {'error':'Se han introducido mas de un dato'},400
-        if not list(data)[0] in permitted:
-            return {'error':'Los datos ingresados no son permitidos'},400
-        response=Server.get(data)
+        id=request.args.get('id',None)
+        name=request.args.get('name',None)
+        category_id=request.args.get('category_id',None)
+        if not id and not name and not category_id:
+            server=None
+        else:
+            server=Server(id=id,name=name,category_id=category_id)
+        response=Server.get(server)
         if response is None:
             return {'mensaje':'No se encontraron datos'}
         else:
-            return response.serialize(),200
+            return [server.serialize() for server in response],200
     @classmethod
     def update(cls):
         data=request.json

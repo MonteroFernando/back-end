@@ -5,7 +5,7 @@ class Message:
     def __init__(self,**kwargs):
         self.id=kwargs.get('id')
         self.id_users=kwargs.get('id_users')
-        self.id_server=kwargs.get('id_channels')
+        self.id_channels=kwargs.get('id_channels')
         self.content=kwargs.get('content')
         self.created=kwargs.get('created')
     def serialize(self):
@@ -18,7 +18,7 @@ class Message:
     @classmethod
     def get(cls,message):
         if not message:
-            query="SELECT * FROM teamhub.messages"
+            query="SELECT * FROM teamhub.messages ORDER BY created"
             response=DatabaseConnection.fetchall(query)
         else:
             data=vars(message)
@@ -31,13 +31,14 @@ class Message:
             response=DatabaseConnection.fetchall(query,params)
         return [cls(**dict(zip(cls._keys,row)))for row in response]
     @classmethod
-    def update(cls,data):
-        keys=' ,'.join('{}=%s'.format(key) for key in data.keys() if key !='id')
+    def update(cls,message):
+        data=vars(message)
+        keys=' ,'.join('{}=%s'.format(key) for key,val in data.items() if key !='id' and val)
         query=f"UPDATE teamhub.messages SET {keys} WHERE id=%s"
-        params=tuple(value for k,value in data.items() if k != 'id')+(data['id'],)
+        params=tuple(val for k,val in data.items() if k != 'id' and val)+(data['id'],)
         DatabaseConnection.execute_query(query,params)
     @classmethod
-    def update(cls,data):
+    def delete(cls,id):
         query="DELETE FROM teamhub.messages WHERE id=%s"
-        params=(data['id'])
-        DatabaseConnection.execute_query(query,data)
+        params=(id,)
+        DatabaseConnection.execute_query(query,params)
