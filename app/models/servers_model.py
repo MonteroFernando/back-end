@@ -23,12 +23,14 @@ class Server:
     def get(cls,server=None):
         if not server:
             query="SELECT * FROM teamhub.servers"
+            servers=DatabaseConnection.fetchall(query)
+
         else:
             data=vars(server)
-        keys=list("{}=%s".format(key) for key,val in data.items() if val)
-        query=f"SELECT * FROM teamhub.servers WHERE {keys[0]}"
-        params=tuple(val for val in data.values() if val)
-        servers=DatabaseConnection.fetchall(query,params)
+            keys=list("{}=%s".format(key) for key,val in data.items() if val)
+            query=f"SELECT * FROM teamhub.servers WHERE {keys[0]}"
+            params=tuple(val for val in data.values() if val)
+            servers=DatabaseConnection.fetchall(query,params)
         return [cls(**dict(zip(cls._keys,row))) for row in servers]
     @classmethod
     def update(cls,data):

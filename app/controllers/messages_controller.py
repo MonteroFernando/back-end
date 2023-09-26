@@ -24,6 +24,8 @@ class MessageController:
                 created=datetime.strptime(created,'%Y-%m-%d %H:%M:%S')
             except ValueError:
                 return {'error':'created no cumple el formato esperado: yyyy-mm-dd hh:mm:ss'},400
+            except TypeError:
+                created=None
             message_obj=Message(id=id,id_users=id_users,id_channels=id_channels,created=created)
         messages=Message.get(message_obj)
         if messages ==[]:
