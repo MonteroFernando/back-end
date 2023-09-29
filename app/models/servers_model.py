@@ -43,6 +43,11 @@ class Server:
         query="DELETE FROM teamhub.servers WHERE id=%s"
         params=(id,)
         DatabaseConnection.execute_query(query,params)
+    @classmethod
+    def lastid(cls):
+        query="SELECT max(id) from teamhub.servers"
+        lid=DatabaseConnection.fetchone(query)
+        return lid
         
 
         

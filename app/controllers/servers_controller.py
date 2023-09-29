@@ -9,7 +9,8 @@ class ServerController:
             return {'error':'No se ingresaron todos los campos obligatorios'},400
         server=Server(**data)
         Server.create(server)
-        return {'mensaje':'Servidor creado con éxito'},200
+        id=Server.lastid()
+        return {'mensaje':'Servidor creado con éxito','id':id},200
     @classmethod
     def get(cls):
         id=request.args.get('id',None)
@@ -32,11 +33,11 @@ class ServerController:
         Server.update(data)
         return {'mensaje':'Usuario modificado con éxito'},200
     @classmethod
-    def delete(cls):
-        data=request.json
-        if not 'id' in list(data):
+    def delete(cls,id=None):
+        if not id:
             return{'error':'No se ingreso el id a eliminar'},400
-        Server.delete(data)
+        
+        Server.delete(id)
         return {'mensaje':'Usuario eliminado con éxito'},200
     
 
